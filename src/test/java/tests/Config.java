@@ -2,6 +2,7 @@
 
 package tests;
 
+// Setting basic variables & their default values
 public class Config{
     public static final String baseUrl = System.getProperty("baseUrl", "http://the-internet.herokuapp.com");
     public static final String browser = System.getProperty("browser", "firefox");

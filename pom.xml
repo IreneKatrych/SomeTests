@@ -25,6 +25,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <!-- Properties -->
     <properties>
         <groups>tests.groups.Shallow</groups>
     </properties>

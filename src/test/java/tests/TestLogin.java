@@ -14,11 +14,13 @@ public class TestLogin extends Base {
 
     private Login login;
 
+    // Loading page
     @Before
     public void setUp() {
         login = new Login(driver);
     }
 
+    // Check if login was success (correct credentials)
     @Test
     @Category(Shallow.class)
     public void succeeded() {
@@ -26,21 +28,19 @@ public class TestLogin extends Base {
         assertTrue("success message not present", login.successMessagePresent());
     }
 
+    // Check if login was failed (not correct credentials)
     @Test
     @Category(Shallow.class)
     public void failed() {
         login.with("tomsmith", "bad password");
         assertTrue("failure message wasn't present after providing bogus credentials", login.failureMessagePresent());
-        //assertTrue("failure message wasn't present after providing bogus credentials", login.successMessagePresent());
     }
 
-    
+    // Test which should fail
     @Test
     @Category(Shallow.class)
     public void forcedFailure() {
         login.with("tomsmithasdf", "SuperSecretPassword!");
         assertTrue("failure message wasn't present after providing bogus credentials", login.successMessagePresent());
     }
-
-
 }

@@ -7,10 +7,8 @@ import org.junit.rules.ExternalResource;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
-import org.openqa.selenium.MutableCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -24,6 +22,7 @@ import static tests.Config.*;
 public class Base {
 
     protected WebDriver driver;
+
     private String testName;
     private String sessionID;
     private SauceREST sauceClient;
@@ -32,6 +31,7 @@ public class Base {
     public ExternalResource resource = new ExternalResource() {
         @Override
         protected void before() throws Throwable {
+            // launch remote driver (for sauce lab)
             if(host.equals("saucelabs")) {
                 DesiredCapabilities capabilities = new DesiredCapabilities();
                 capabilities.setCapability("browserName", browser);
@@ -39,35 +39,29 @@ public class Base {
                 capabilities.setCapability("platform", platform);
                 capabilities.setCapability("name", testName);
 
-                /*MutableCapabilities sauceOptions = new MutableCapabilities();
-                ChromeOptions browserOptions = new ChromeOptions();
-                browserOptions.setExperimentalOption("w3c", true);
-                browserOptions.setCapability("platformName", "Windows 10");
-                browserOptions.setCapability("browserVersion", "latest");
-                browserOptions.setCapability("sauce:options", sauceOptions);
-                browserOptions.setCapability("name", testName);*/
-
                 String sauceUrl = String.format("http://%s:%s@ondemand.saucelabs.com:80/wd/hub", sauceUser, sauceKey);
-                driver = new RemoteWebDriver(new URL(sauceUrl), /*browserOptions*/capabilities);
+                driver = new RemoteWebDriver(new URL(sauceUrl), capabilities);
                 sessionID = ((RemoteWebDriver) driver).getSessionId().toString();
                 sauceClient = new SauceREST(sauceUser, sauceKey);
-            } else if (host.equals("localhost")) {
-                if (browser.equals("firefox")) {
+            } else if (host.equals("localhost")) { // launch localhost
+                if (browser.equals("firefox")) { // with firefox browser with using geckodriver
                     System.setProperty("webdriver.gecko.driver", System.getProperty("user.dir") + "/vendor/geckodriver.exe");
                     driver = new FirefoxDriver();
-                } else if (browser.equals("chrome")) {
+                } else if (browser.equals("chrome")) { //with chrome browser with using chromedriver
                     System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/vendor/chromedriver.exe");
                     driver = new ChromeDriver();
                 }
             }
         }
 
+        // Quit from webpage
         @Override
         protected void after() {
             driver.quit();
         }
     };
 
+    // Passing test name and status to saucelabs
     @Rule
     public TestRule watcher = new TestWatcher() {
         @Override
