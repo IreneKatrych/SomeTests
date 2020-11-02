@@ -45,6 +45,9 @@ public class Base {
         find(locator).sendKeys(inputText);
     }
 
+    // check text by locator
+    public boolean checkIfTextExist(String text, By locator) { return find(locator).getText().contains(text); }
+
     // Check if element is on page
     public Boolean isDisplayed(By locator) {
         try {
